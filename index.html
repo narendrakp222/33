@@ -102,6 +102,16 @@ a{color:inherit;text-decoration:none}
 </div>
 
 <script>
+// Ensure default admin exists
+(function(){
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
+  if(!users.find(u => u.role==="admin")){
+    users.push({ email:"admin@gmail.com", password:"admin123", role:"admin" });
+  }
+  localStorage.setItem("users", JSON.stringify(users));
+})();
+
+
 // initialize storage
 if(!localStorage.getItem('accounts')) localStorage.setItem('accounts', JSON.stringify({ "admin123@gmail.com": { password: "admin123", role: "admin", name:"Administrator" } }));
 if(!localStorage.getItem('currentUser')) localStorage.setItem('currentUser', null);
