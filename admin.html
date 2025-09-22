@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin – AIMatch Bharat</title>
+<style>
+:root{--primary:#1a237e;--accent:#ff9800;--bg:#f4f6fb;--text:#111}
+body{font-family:'Inter',Arial,sans-serif;background:var(--bg);color:var(--text);margin:0}
+.navbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:var(--primary);color:#fff}
+.navbar a{color:#fff;text-decoration:none;cursor:pointer;margin-left:12px}
+.container{max-width:1000px;margin:20px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+h2{color:var(--primary);text-align:center}
+.section{margin:16px 0}
+.card{padding:10px;border:1px solid #ddd;border-radius:8px;margin:8px 0;background:#fafafa}
+.btn{padding:8px 12px;border-radius:6px;border:none;cursor:pointer;font-weight:700;margin-right:8px}
+.approve{background:#4caf50;color:#fff}
+.reject{background:#f44336;color:#fff}
+.small{font-size:0.9rem;color:#555}
+@media(max-width:720px){.navbar{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div><img src="NE_Preview1.webp" width="28"> AIMatch Bharat – Admin</div>
+  <div>
+    <a onclick="goHome()">Home</a> 
+    <a onclick="logout()">Logout</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h2>Admin Dashboard</h2>
+
+  <div class="section">
+    <h3>Pending Internships</h3>
+    <div id="pendingInts"></div>
+  </div>
+
+  <div class="section">
+    <h3>Pending Student Applications</h3>
+    <div id="pendingApps"></div>
+  </div>
+
+  <div class="section">
+    <h3>Notifications</h3>
+    <div id="notes"></div>
+  </div>
+</div>
+
+<script>
+// ===== Session Check =====
+const curUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+if(!curUser || curUser.role!=='admin'){ 
+    alert('Login as admin first'); 
+    location.href='index.html'; 
+}
+
+function goHome(){ location.href='index.html' }
+function logout(){ 
+    localStorage.removeItem('currentUser'); 
+    alert('Logged out'); 
+    goHome(); 
+}
+
+// ===== Render Pending Internships =====
+function renderPendingInternships(){
+    const pending = JSON.parse(localStorage.getItem('pendingInternships') || '[]');
+    const container = document.getElementById('pendingInts');
+    container.innerHTML = '';
+    if(pending.length===0){ container.innerHTML = '<div class="small">No pending internships.</div>'; return; }
+    pending.forEach(p => {
+        const d = document.createElement('div');
+        d.className='card';
+        d.innerHTML = `<strong>${p.companyName || p.companyEmail}</strong> — ${p.role}
+            <div class="small">${p.location} | ${p.stipend}</div>
+            <div style="margin-top:8px">
+                <button class="btn approve" onclick="approveIntern('${p.id}')">Approve</button>
+                <button class="btn reject" onclick="rejectIntern('${p.id}')">Reject</button>
+            </div>`;
+        container.appendChild(d);
+    });
+}
+
+// ===== Approve / Reject Internship =====
+function approveIntern(id){
+    let pending = JSON.parse(localStorage.getItem('pendingInternships')||'[]');
+    let approved = JSON.parse(localStorage.getItem('approvedInternships')||'[]');
+    const idx = pending.findIndex(x=>x.id===id);
+    if(idx===-1){ alert('Not found'); return; }
+    const item = pending.splice(idx,1)[0];
+    approved.push(item);
+    localStorage.setItem('pendingInternships', JSON.stringify(pending));
+    localStorage.setItem('approvedInternships', JSON.stringify(approved));
+    pushNotification(item.companyEmail, `Your internship "${item.role}" was approved by admin.`);
+    renderPendingInternships(); renderPendingApps();
+}
+
+function rejectIntern(id){
+    let pending = JSON.parse(localStorage.getItem('pendingInternships')||'[]');
+    const idx = pending.findIndex(x=>x.id===id);
+    if(idx===-1){ alert('Not found'); return; }
+    const item = pending.splice(idx,1)[0];
+    localStorage.setItem('pendingInternships', JSON.stringify(pending));
+    pushNotification(item.companyEmail, `Your internship "${item.role}" was rejected by admin.`);
+    renderPendingInternships();
+}
+
+// ===== Render Pending Applications =====
+function renderPendingApps(){
+    const apps = JSON.parse(localStorage.getItem('studentApplications')||'[]');
+    const pendingApps = apps.filter(a=>a.status==='Pending');
+    const container = document.getElementById('pendingApps');
+    container.innerHTML = '';
+    if(pendingApps.length===0){ container.innerHTML = '<div class="small">No pending applications.</div>'; return; }
+    pendingApps.forEach(a=>{
+        const d = document.createElement('div');
+        d.className='card';
+        d.innerHTML = `<strong>${a.studentEmail}</strong> applied for <strong>${a.role}</strong> (company: ${a.companyEmail})
+            <div class="small">Applied: ${new Date(a.appliedAt).toLocaleString()}</div>
+            <div style="margin-top:8px">
+                <button class="btn approve" onclick="approveApp('${a.id}')">Approve</button>
+                <button class="btn reject" onclick="rejectApp('${a.id}')">Reject</button>
+            </div>`;
+        container.appendChild(d);
+    });
+}
+
+function approveApp(id){
+    let apps = JSON.parse(localStorage.getItem('studentApplications')||'[]');
+    const idx = apps.findIndex(a=>a.id===id);
+    if(idx===-1){ alert('Application not found'); return; }
+    apps[idx].status='Approved';
+    localStorage.setItem('studentApplications', JSON.stringify(apps));
+    pushNotification(apps[idx].studentEmail, `Your application for "${apps[idx].role}" approved.`);
+    pushNotification(apps[idx].companyEmail, `Application of ${apps[idx].studentEmail} approved.`);
+    renderPendingApps(); renderNotes();
+}
+
+function rejectApp(id){
+    let apps = JSON.parse(localStorage.getItem('studentApplications')||'[]');
+    const idx = apps.findIndex(a=>a.id===id);
+    if(idx===-1){ alert('Application not found'); return; }
+    apps[idx].status='Rejected';
+    localStorage.setItem('studentApplications', JSON.stringify(apps));
+    pushNotification(apps[idx].studentEmail, `Your application for "${apps[idx].role}" rejected.`);
+    renderPendingApps(); renderNotes();
+}
+
+// ===== Notifications =====
+function pushNotification(email, text){
+    const notes = JSON.parse(localStorage.getItem('notifications')||'[]');
+    notes.push({ id:'n_'+Date.now(), email, text, createdAt:new Date().toISOString(), read:false });
+    localStorage.setItem('notifications', JSON.stringify(notes));
+    renderNotes();
+}
+
+function renderNotes(){
+    const all = JSON.parse(localStorage.getItem('notifications')||'[]');
+    const container = document.getElementById('notes');
+    container.innerHTML='';
+    if(all.length===0){ container.innerHTML='<div class="small">No notifications.</div>'; return; }
+    all.slice().reverse().forEach(n=>{
+        const d = document.createElement('div');
+        d.className='card';
+        d.innerHTML = `<div class="small"><strong>To:</strong> ${n.email}</div><div>${n.text}</div><div class="small">${new Date(n.createdAt).toLocaleString()}</div>`;
+        container.appendChild(d);
+    });
+}
+
+// ===== Initial Render =====
+renderPendingInternships();
+renderPendingApps();
+renderNotes();
+</script>
+</body>
+</html>

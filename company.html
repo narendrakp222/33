@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Company – AIMatch Bharat</title>
+<style>
+:root{--primary:#1a237e;--accent:#ff9800;--bg:#f4f6fb;--text:#111}
+body{font-family:'Inter',Arial,sans-serif;background:var(--bg);color:var(--text);margin:0}
+.navbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:var(--primary);color:#fff}
+.navbar a{color:#fff;text-decoration:none;cursor:pointer}
+.container{max-width:900px;margin:20px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+h2{text-align:center;color:var(--primary)}
+input{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #ccc}
+button{padding:10px 14px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+.intern{padding:10px;border-radius:8px;border:1px solid #ddd;margin:8px 0;background:#fafafa}
+.small{font-size:0.9rem;color:#555}
+@media(max-width:720px){.navbar{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div><img src="NE_Preview1.webp" width="28"> AIMatch Bharat – Company</div>
+  <div><a onclick="goHome()">Home</a> | <a onclick="logout()">Logout</a></div>
+</nav>
+
+<div class="container">
+  <h2>Post New Internship (pending admin)</h2>
+  <input id="c_company" placeholder="Company name (auto-filled)" />
+  <input id="c_role" placeholder="Role / Title" />
+  <input id="c_location" placeholder="Location" />
+  <input id="c_stipend" placeholder="Stipend (e.g. ₹10000/month)" />
+  <div style="display:flex;gap:8px">
+    <button onclick="addInternship()">Add Internship</button>
+    <button onclick="clearForm()">Clear</button>
+  </div>
+
+  <h2>Your Posted Internships</h2>
+  <div id="myList"></div>
+</div>
+
+<script>
+// validate session: allow company role only
+const cur = JSON.parse(localStorage.getItem('currentUser')||'null');
+if(!cur || cur.role!=='company'){ alert('Login as company first'); location.href='index.html'; }
+document.getElementById('c_company').value = cur.email;
+
+function addInternship(){
+  const companyEmail = cur.email;
+  const companyName = document.getElementById('c_company').value.trim();
+  const role = document.getElementById('c_role').value.trim();
+  const location = document.getElementById('c_location').value.trim();
+  const stipend = document.getElementById('c_stipend').value.trim();
+  if(!companyName || !role || !location || !stipend){ alert('Fill all fields'); return; }
+  const pending = JSON.parse(localStorage.getItem('pendingInternships')||'[]');
+  const id = 'int_'+Date.now();
+  pending.push({ id, companyEmail, companyName, role, location, stipend, createdAt:new Date().toISOString() });
+  localStorage.setItem('pendingInternships', JSON.stringify(pending));
+  alert('Internship posted (pending admin approval)');
+  clearForm(); renderMyList();
+}
+
+function clearForm(){ document.getElementById('c_role').value=''; document.getElementById('c_location').value=''; document.getElementById('c_stipend').value=''; }
+
+function renderMyList(){
+  const pending = JSON.parse(localStorage.getItem('pendingInternships')||'[]');
+  const approved = JSON.parse(localStorage.getItem('approvedInternships')||'[]');
+  const list = document.getElementById('myList');
+  list.innerHTML = '';
+  pending.filter(i=>i.companyEmail===cur.email).forEach(i=>{
+    const d = document.createElement('div'); d.className='intern';
+    d.innerHTML = `<strong>${i.role}</strong> — Pending (admin)<br><span class="small">${i.location} | ${i.stipend}</span>`;
+    list.appendChild(d);
+  });
+  approved.filter(i=>i.companyEmail===cur.email).forEach(i=>{
+    const d = document.createElement('div'); d.className='intern';
+    d.innerHTML = `<strong>${i.role}</strong> — Approved<br><span class="small">${i.location} | ${i.stipend}</span>`;
+    list.appendChild(d);
+  });
+}
+
+function goHome(){ location.href='index.html' }
+function logout(){ localStorage.removeItem('currentUser'); alert('Logged out'); goHome(); }
+
+renderMyList();
+</script>
+</body>
+</html>
