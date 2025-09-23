@@ -8,13 +8,15 @@
 :root{--primary:#1a237e;--accent:#ff9800;--bg:#f4f6fb;--text:#111}
 body{font-family:'Inter',Arial,sans-serif;background:var(--bg);color:var(--text);margin:0}
 .navbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:var(--primary);color:#fff}
-.navbar a{color:#fff;text-decoration:none;cursor:pointer}
+.navbar a{color:#fff;text-decoration:none;cursor:pointer;margin-left:12px}
 .container{max-width:900px;margin:20px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.08)}
 h2{text-align:center;color:var(--primary)}
 input{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #ccc}
-button{padding:10px 14px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+button{padding:10px 14px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;margin-top:10px}
 .intern{padding:10px;border-radius:8px;border:1px solid #ddd;margin:8px 0;background:#fafafa}
 .small{font-size:0.9rem;color:#555}
+.notifications{margin-top:20px;padding:10px;background:#e8f0fe;border-radius:8px}
+.notification-item{padding:6px;border-bottom:1px solid #ccc;font-size:0.9rem}
 @media(max-width:720px){.navbar{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
@@ -27,7 +29,7 @@ button{padding:10px 14px;border-radius:8px;border:none;background:var(--accent);
 
 <div class="container">
   <h2>Post New Internship (pending admin)</h2>
-  <input id="c_company" placeholder="Company name (auto-filled)" />
+  <input id="c_company" placeholder="Company name (auto-filled)" disabled />
   <input id="c_role" placeholder="Role / Title" />
   <input id="c_location" placeholder="Location" />
   <input id="c_stipend" placeholder="Stipend (e.g. ₹10000/month)" />
@@ -38,14 +40,33 @@ button{padding:10px 14px;border-radius:8px;border:none;background:var(--accent);
 
   <h2>Your Posted Internships</h2>
   <div id="myList"></div>
+
+  <h2>Notifications</h2>
+  <div id="notifications" class="notifications"></div>
 </div>
 
 <script>
-// validate session: allow company role only
+// ===== Session check =====
 const cur = JSON.parse(localStorage.getItem('currentUser')||'null');
 if(!cur || cur.role!=='company'){ alert('Login as company first'); location.href='index.html'; }
 document.getElementById('c_company').value = cur.email;
 
+// ===== Preload top internships =====
+(function preloadInternships(){
+  let approved = JSON.parse(localStorage.getItem('approvedInternships')||'[]');
+  if(approved.length === 0){
+    approved = [
+      {id:'int_demo1',companyEmail:'careers@infosys.com',companyName:'Infosys',role:'Software Developer Intern',location:'Bangalore',stipend:'₹20,000/month',createdAt:new Date().toISOString()},
+      {id:'int_demo2',companyEmail:'jobs@tcs.com',companyName:'TCS',role:'Full Stack Intern',location:'Hyderabad',stipend:'₹18,000/month',createdAt:new Date().toISOString()},
+      {id:'int_demo3',companyEmail:'hr@wipro.com',companyName:'Wipro',role:'Data Science Intern',location:'Pune',stipend:'₹22,000/month',createdAt:new Date().toISOString()},
+      {id:'int_demo4',companyEmail:'talent@jio.com',companyName:'Reliance Jio',role:'AI/ML Intern',location:'Mumbai',stipend:'₹25,000/month',createdAt:new Date().toISOString()},
+      {id:'int_demo5',companyEmail:'careers@flipkart.com',companyName:'Flipkart',role:'Business Analyst Intern',location:'Bangalore',stipend:'₹21,000/month',createdAt:new Date().toISOString()}
+    ];
+    localStorage.setItem('approvedInternships', JSON.stringify(approved));
+  }
+})();
+
+// ===== Internship Posting =====
 function addInternship(){
   const companyEmail = cur.email;
   const companyName = document.getElementById('c_company').value.trim();
@@ -53,37 +74,61 @@ function addInternship(){
   const location = document.getElementById('c_location').value.trim();
   const stipend = document.getElementById('c_stipend').value.trim();
   if(!companyName || !role || !location || !stipend){ alert('Fill all fields'); return; }
+
   const pending = JSON.parse(localStorage.getItem('pendingInternships')||'[]');
   const id = 'int_'+Date.now();
   pending.push({ id, companyEmail, companyName, role, location, stipend, createdAt:new Date().toISOString() });
   localStorage.setItem('pendingInternships', JSON.stringify(pending));
+
   alert('Internship posted (pending admin approval)');
   clearForm(); renderMyList();
 }
 
 function clearForm(){ document.getElementById('c_role').value=''; document.getElementById('c_location').value=''; document.getElementById('c_stipend').value=''; }
 
+// ===== Render Posted Internships =====
 function renderMyList(){
   const pending = JSON.parse(localStorage.getItem('pendingInternships')||'[]');
   const approved = JSON.parse(localStorage.getItem('approvedInternships')||'[]');
   const list = document.getElementById('myList');
   list.innerHTML = '';
+
   pending.filter(i=>i.companyEmail===cur.email).forEach(i=>{
-    const d = document.createElement('div'); d.className='intern';
+    const d = document.createElement('div');
+    d.className='intern';
     d.innerHTML = `<strong>${i.role}</strong> — Pending (admin)<br><span class="small">${i.location} | ${i.stipend}</span>`;
     list.appendChild(d);
   });
+
   approved.filter(i=>i.companyEmail===cur.email).forEach(i=>{
-    const d = document.createElement('div'); d.className='intern';
+    const d = document.createElement('div');
+    d.className='intern';
     d.innerHTML = `<strong>${i.role}</strong> — Approved<br><span class="small">${i.location} | ${i.stipend}</span>`;
     list.appendChild(d);
   });
 }
 
-function goHome(){ location.href='index.html' }
+// ===== Notifications for company =====
+function renderNotifications() {
+  const allNotes = JSON.parse(localStorage.getItem('notifications')||'[]');
+  const myNotes = allNotes.filter(n=>n.email===cur.email);
+  const container = document.getElementById('notifications');
+  container.innerHTML = '';
+  if(myNotes.length===0) { container.innerHTML='<div class="small">No notifications.</div>'; return; }
+  myNotes.slice().reverse().forEach(n=>{
+    const div = document.createElement('div');
+    div.className='notification-item';
+    div.innerHTML = `${n.text} <span class="small">(${new Date(n.createdAt).toLocaleString()})</span>`;
+    container.appendChild(div);
+  });
+}
+
+function goHome(){ location.href='index.html'; }
 function logout(){ localStorage.removeItem('currentUser'); alert('Logged out'); goHome(); }
 
+// ===== Initial render =====
 renderMyList();
+renderNotifications();
 </script>
 </body>
 </html>
