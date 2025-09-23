@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Student – AIMatch Bharat</title>
 <style>
 :root {
@@ -11,23 +11,27 @@
   --bg: #f4f6fb;
   --text: #111;
   --fail: #f44336;
+  --success: #4caf50;
 }
-body {font-family:'Inter',Arial,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:0}
-.navbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:var(--primary);color:#fff}
-.navbar a{color:#fff;text-decoration:none;cursor:pointer;margin-left:12px}
-.container{max-width:900px;margin:20px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.08)}
-h2{text-align:center;color:var(--primary)}
-input, select{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #ccc}
-button{padding:10px 14px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;margin-top:10px}
-.progress{width:100%;height:16px;background:#eee;border-radius:8px;overflow:hidden;margin:12px 0}
-.progress>div{height:100%;background:var(--primary);width:0%;transition:width .4s}
-.feedback{color:var(--fail);font-weight:700;text-align:center;margin-top:12px}
-.intern{padding:10px;border-radius:8px;border:1px solid #ddd;margin:8px 0;background:#fafafa}
-.top-actions{display:flex;gap:8px;align-items:center}
-.small{font-size:0.9rem;color:#555}
-.back{background:#3949ab}
-.logout{background:#f44336}
-@media(max-width:720px){.navbar{flex-direction:column;align-items:flex-start;gap:8px}}
+body {font-family:'Inter',Arial,sans-serif;background:var(--bg);color:var(--text);margin:0;padding:0;}
+.navbar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:var(--primary);color:#fff;}
+.navbar a{color:#fff;text-decoration:none;cursor:pointer;margin-left:12px;}
+.container{max-width:1000px;margin:20px auto;padding:20px;background:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.08);}
+h2{text-align:center;color:var(--primary);margin-bottom:10px;}
+form{display:flex;gap:20px;flex-wrap:wrap;}
+form .col{flex:1;min-width:220px;}
+input, select{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #ccc;}
+button{padding:10px 14px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;margin-top:10px;}
+button:disabled{opacity:0.6;cursor:not-allowed;}
+.progress{width:100%;height:16px;background:#eee;border-radius:8px;overflow:hidden;margin:12px 0;}
+.progress>div{height:100%;background:var(--primary);width:0%;transition:width .4s;}
+.feedback{color:var(--fail);font-weight:700;text-align:center;margin-top:12px;}
+.intern{padding:10px;border-radius:8px;border:1px solid #ddd;margin:8px 0;background:#fafafa;}
+.top-actions{display:flex;gap:8px;align-items:center;margin-top:10px;}
+.small{font-size:0.9rem;color:#555;}
+.back{background:#3949ab;}
+.logout{background:#f44336;}
+@media(max-width:720px){form{flex-direction:column;}}
 </style>
 </head>
 <body>
@@ -38,62 +42,69 @@ button{padding:10px 14px;border-radius:8px;border:none;background:var(--accent);
 </nav>
 
 <div class="container" id="app">
-<h2>Student Profile & AI Matching</h2>
+<h2>Student Dashboard</h2>
 
-<!-- Step 1: profile -->
+<!-- Step 1: Profile -->
 <div id="stepProfile">
-  <p class="small">Complete your profile (required before analysis)</p>
-  <input id="p_name" placeholder="Full name" />
-  <input id="p_email" placeholder="Email" disabled />
-  <select id="Gender">
-    <option value="">Gender</option>
-    <option>Male</option>
-    <option>Female</option>
-    <option>Others</option>
-  </select>
-  <input id="p_college" placeholder="College / University" />
-  <input id="p_field" placeholder="Field of study" />
-  <select id="p_grad">
-    <option value="">Graduating Year</option>
-    <option>2025</option><option>2026</option><option>2027</option><option>2028</option>
-  </select>
-  <input id="p_district" placeholder="Rural District (if any)" />
-  <select id="p_category">
-    <option value="">Reserved Category</option>
-    <option>General</option><option>SC</option><option>ST</option><option>OBC</option><option>EWS</option><option>PwD</option>
-  </select>
-  <select id="sector" required>
-    <option value="">Sector of Interest</option>
-    <option>Software Development</option>
-    <option>AI/ML</option>
-    <option>Data Science</option>
-    <option>Cloud Computing</option>
-    <option>Cybersecurity</option>
-    <option>Web Development</option>
-    <option>Mobile App Development</option>
-    <option>UI/UX Design</option>
-    <option>Digital Marketing</option>
-    <option>Finance</option>
-    <option>Healthcare</option>
-    <option>Education</option>
-    <option>Agriculture</option>
-    <option>E-commerce</option>
-    <option>IoT</option>
-    <option>Blockchain</option>
-    <option>Robotics</option>
-    <option>Game Development</option>
-    <option>AR/VR</option>
-    <option>Other</option>
-  </select>
-  <input id="p_location" placeholder="Preferred Location" />
-  <input id="p_skills" placeholder="Skills (comma separated) e.g. python,ml,sql" />
+  <form>
+    <div class="col">
+      <h3>Personal & Academic</h3>
+      <input id="p_name" placeholder="Full Name"/>
+      <input id="p_email" placeholder="Email" disabled/>
+      <select id="Gender">
+        <option value="">Gender</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Others</option>
+      </select>
+      <input id="p_college" placeholder="College / University"/>
+      <input id="p_field" placeholder="Field of Study"/>
+      <select id="p_grad">
+        <option value="">Graduating Year</option>
+        <option>2025</option><option>2026</option><option>2027</option><option>2028</option>
+      </select>
+    </div>
+    <div class="col">
+      <h3>Skills & Preferences</h3>
+      <input id="p_skills" placeholder="Skills (comma separated)"/>
+      <select id="sector">
+        <option value="">Sector of Interest</option>
+        <option>Software Development</option>
+        <option>AI/ML</option>
+        <option>Data Science</option>
+        <option>Cloud Computing</option>
+        <option>Cybersecurity</option>
+        <option>Web Development</option>
+        <option>Mobile App Development</option>
+        <option>UI/UX Design</option>
+        <option>Digital Marketing</option>
+        <option>Finance</option>
+        <option>Healthcare</option>
+        <option>Education</option>
+        <option>Agriculture</option>
+        <option>E-commerce</option>
+        <option>IoT</option>
+        <option>Blockchain</option>
+        <option>Robotics</option>
+        <option>Game Development</option>
+        <option>AR/VR</option>
+        <option>Other</option>
+      </select>
+      <input id="p_location" placeholder="Preferred Location"/>
+      <input id="p_district" placeholder="Rural District (if any)"/>
+      <select id="p_category">
+        <option value="">Reserved Category</option>
+        <option>General</option><option>SC</option><option>ST</option><option>OBC</option><option>EWS</option><option>PwD</option>
+      </select>
+    </div>
+  </form>
   <div class="top-actions">
     <button onclick="saveProfile()">Save & Analyze</button>
     <button class="back" onclick="clearProfile()">Clear</button>
   </div>
 </div>
 
-<!-- Step 2: AI progress -->
+<!-- Step 2: AI Progress -->
 <div id="stepAI" style="display:none">
   <h3 style="text-align:center">AI/ML Engine analyzing your profile...</h3>
   <div class="progress"><div id="progressFill"></div></div>
@@ -107,12 +118,15 @@ button{padding:10px 14px;border-radius:8px;border:none;background:var(--accent);
   <div style="text-align:center;margin-top:10px"><button onclick="submitTest()">Submit Test</button></div>
 </div>
 
-<!-- Step 4: Results & Internships -->
+<!-- Step 4: Result & Internships -->
 <div id="stepResult" style="display:none">
   <h3 style="text-align:center">Result</h3>
   <p id="resultText" style="text-align:center;font-weight:700"></p>
   <div id="feedbackArea"></div>
   <div id="matchedArea"></div>
+
+  <h3 style="text-align:center;margin-top:20px">My Applications</h3>
+  <div id="applicationTrack"></div>
 
   <h3 style="text-align:center;margin-top:20px">Your Certificates</h3>
   <div id="certificateArea"></div>
@@ -121,25 +135,25 @@ button{padding:10px 14px;border-radius:8px;border:none;background:var(--accent);
 </div>
 
 <script>
-// ===== session check =====
-const current = JSON.parse(localStorage.getItem('currentUser') || 'null');
-if (!current || current.role !== 'student') { 
-  alert('Please login as student first'); 
-  location.href = 'index.html'; 
-}
-document.getElementById('p_email').value = current.email;
+// ===== Session check =====
+const current = JSON.parse(localStorage.getItem('currentUser')||'null');
+if(!current || current.role!=='student'){ alert('Please login as student first'); location.href='index.html'; }
+document.getElementById('p_email').value=current.email;
 
-// ===== Preloaded questions =====
-const Q = [
-  { q: "If 3x+5=20, x=?", options: ["3", "5", "7", "10"], correct: 1 },
-  { q: "Next: 2,4,8,16,?", options: ["20", "32", "24", "30"], correct: 1 },
-  { q: "Odd one out: Apple,Banana,Carrot,Mango", options: ["Apple", "Banana", "Carrot", "Mango"], correct: 2 },
-  { q: "Train 60km/h. Distance in 3h?", options: ["120", "150", "180", "200"], correct: 2 },
-  { q: "15% of 200?", options: ["25", "30", "35", "40"], correct: 1 }
+// ===== Preloaded Questions =====
+const Q=[
+  {q:"If 3x+5=20, x=?",options:["3","5","7","10"],correct:1},
+  {q:"Next: 2,4,8,16,?",options:["20","32","24","30"],correct:1},
+  {q:"Odd one out: Apple,Banana,Carrot,Mango",options:["Apple","Banana","Carrot","Mango"],correct:2},
+  {q:"Train 60km/h. Distance in 3h?",options:["120","150","180","200"],correct:2},
+  {q:"15% of 200?",options:["25","30","35","40"],correct:1}
 ];
 
-// ===== Save profile =====
-function saveProfile() {
+// ===== Helper to save current step =====
+function saveStep(step){ localStorage.setItem(current.email+'_currentStep', step); }
+
+// ===== Save Profile =====
+function saveProfile(){
   const profile = {
     name: document.getElementById('p_name').value.trim(),
     email: current.email,
@@ -150,29 +164,40 @@ function saveProfile() {
     category: document.getElementById('p_category').value,
     sector: document.getElementById('sector').value,
     location: document.getElementById('p_location').value.trim(),
-    skills: document.getElementById('p_skills').value.split(',').map(s => s.trim().toLowerCase()).filter(Boolean)
+    skills: document.getElementById('p_skills').value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean)
   };
-  if (!profile.name || profile.skills.length === 0) { alert('Fill name & skills'); return; }
-  const profiles = JSON.parse(localStorage.getItem('profiles') || '{}');
-  profiles[profile.email] = profile;
-  localStorage.setItem('profiles', JSON.stringify(profiles));
+  if(!profile.name || profile.skills.length===0){ alert('Fill name & skills'); return; }
+  const profiles=JSON.parse(localStorage.getItem('profiles')||'{}');
+  profiles[profile.email]=profile;
+  localStorage.setItem('profiles',JSON.stringify(profiles));
+
   document.getElementById('stepProfile').style.display='none';
   document.getElementById('stepAI').style.display='block';
+  saveStep('AI');
+  document.getElementById('aiMessage').innerText = "Engalo AI/ML Engine analyzing your profile...";
   simulateAI(profile);
 }
 
-function clearProfile() { document.getElementById('p_name').value=''; document.getElementById('p_skills').value=''; }
+// ===== Clear Profile =====
+function clearProfile(){['p_name','p_skills','p_college','p_field','p_location','p_district'].forEach(id=>document.getElementById(id).value='');}
 
-// ===== AI simulation =====
+// ===== AI Simulation =====
 function simulateAI(profile){
-  const msgs = ["Analyzing profile...", "Checking skills...", "Matching internships...", "Finalizing..."];
-  let i=0,w=0;
-  const interval = setInterval(()=>{
-    w+=25;
-    document.getElementById('progressFill').style.width=w+'%';
-    document.getElementById('aiMessage').innerText=msgs[i]||'';
+  const msgs = [
+    "Engalo AI Engine: Analyzing personal and academic details...",
+    "Engalo AI Engine: Checking skill match with top sectors...",
+    "Engalo AI Engine: Matching you to suitable internships...",
+    "Engalo AI Engine: Finalizing your personalized recommendations..."
+  ];
+  let i=0, w=0;
+  const interval=setInterval(()=>{
+    w+=25; document.getElementById('progressFill').style.width=w+'%';
+    document.getElementById('aiMessage').innerText = msgs[i]||'';
     i++;
-    if(w>=100){ clearInterval(interval); setTimeout(startTest,500); }
+    if(w>=100){ clearInterval(interval); setTimeout(()=>{
+      startTest();
+      saveStep('Test');
+    },500); }
   },700);
 }
 
@@ -180,18 +205,17 @@ function simulateAI(profile){
 function startTest(){
   document.getElementById('stepAI').style.display='none';
   document.getElementById('stepTest').style.display='block';
-  const qEl=document.getElementById('questions');
-  qEl.innerHTML='';
+  saveStep('Test');
+  const qEl=document.getElementById('questions'); qEl.innerHTML='';
   Q.forEach((qq,idx)=>{
     let block=document.createElement('div');
     block.innerHTML=`<p>${idx+1}. ${qq.q}</p>`;
-    qq.options.forEach((opt,j)=>{
-      block.innerHTML+=`<label style="display:block"><input type="radio" name="q${idx}" value="${j}"> ${opt}</label>`;
-    });
+    qq.options.forEach((opt,j)=> block.innerHTML+=`<label style="display:block"><input type="radio" name="q${idx}" value="${j}"> ${opt}</label>`);
     qEl.appendChild(block);
   });
 }
 
+// ===== Submit Test =====
 function submitTest(){
   let score=0;
   Q.forEach((qq,i)=>{
@@ -200,8 +224,10 @@ function submitTest(){
   });
   document.getElementById('stepTest').style.display='none';
   document.getElementById('stepResult').style.display='block';
+  saveStep('Result');
   showResult(score);
   showCertificates();
+  showApplications();
 }
 
 // ===== Show Result & Internships =====
@@ -214,11 +240,10 @@ function showResult(score){
   if(score>=3){
     resultText.innerText=`Congratulations — you passed (${score}/${Q.length})`;
 
-    const profiles = JSON.parse(localStorage.getItem('profiles')||'{}');
-    const student = profiles[current.email] || { skills: [] };
+    const profiles=JSON.parse(localStorage.getItem('profiles')||'{}');
+    const student=profiles[current.email]||{skills:[]};
 
-    // Preloaded internships
-    const approved = [
+    const approved=[
       {id:'int1',companyName:'Infosys',role:'Software Developer Intern',location:'Bangalore',stipend:'₹20,000/month',companyEmail:'careers@infosys.com'},
       {id:'int2',companyName:'TCS',role:'Full Stack Intern',location:'Hyderabad',stipend:'₹18,000/month',companyEmail:'jobs@tcs.com'},
       {id:'int3',companyName:'Wipro',role:'Data Science Intern',location:'Pune',stipend:'₹22,000/month',companyEmail:'hr@wipro.com'},
@@ -226,7 +251,7 @@ function showResult(score){
       {id:'int5',companyName:'Flipkart',role:'Business Analyst Intern',location:'Bangalore',stipend:'₹21,000/month',companyEmail:'careers@flipkart.com'}
     ];
 
-    matchedArea.innerHTML='<h4>Matched internships</h4>';
+    matchedArea.innerHTML='<h4>Matched Internships</h4>';
     approved.forEach(intn=>{
       let match=0;
       const roleTokens=(intn.role||'').toLowerCase().split(/\W+/).filter(Boolean);
@@ -236,9 +261,10 @@ function showResult(score){
       div.className='intern';
       div.innerHTML=`<h4>${intn.companyName} — ${intn.role}</h4>
                      <p>Location: ${intn.location} | Stipend: ${intn.stipend} | Match: ${pct}%</p>
-                     <button onclick='applyTo("${intn.id}")'>Apply</button>`;
+                     <button onclick='applyTo("${intn.id}", this)'>Apply</button>`;
       matchedArea.appendChild(div);
     });
+    markAppliedInternships();
 
   } else {
     resultText.innerText=`You did not pass (${score}/${Q.length})`;
@@ -247,30 +273,63 @@ function showResult(score){
 }
 
 // ===== Apply to internship =====
-function applyTo(id){
-  const apps = JSON.parse(localStorage.getItem('studentApplications')||'[]');
-  const exists = apps.some(a=>a.internshipId===id && a.studentEmail===current.email);
+function applyTo(id, btn){
+  const apps=JSON.parse(localStorage.getItem('studentApplications')||'[]');
+  const exists=apps.some(a=>a.internshipId===id && a.studentEmail===current.email);
   if(exists){ alert('Already applied'); return; }
-  const allApproved = [
+
+  const allApproved=[
     {id:'int1',companyName:'Infosys',role:'Software Developer Intern',location:'Bangalore',stipend:'₹20,000/month',companyEmail:'careers@infosys.com'},
     {id:'int2',companyName:'TCS',role:'Full Stack Intern',location:'Hyderabad',stipend:'₹18,000/month',companyEmail:'jobs@tcs.com'},
     {id:'int3',companyName:'Wipro',role:'Data Science Intern',location:'Pune',stipend:'₹22,000/month',companyEmail:'hr@wipro.com'},
     {id:'int4',companyName:'Reliance Jio',role:'AI/ML Intern',location:'Mumbai',stipend:'₹25,000/month',companyEmail:'talent@jio.com'},
     {id:'int5',companyName:'Flipkart',role:'Business Analyst Intern',location:'Bangalore',stipend:'₹21,000/month',companyEmail:'careers@flipkart.com'}
   ];
-  const intern = allApproved.find(i=>i.id===id);
+
+  const intern=allApproved.find(i=>i.id===id);
   if(!intern){ alert('Not found'); return; }
-  const app = { id:'app_'+Date.now(), studentEmail:current.email, internshipId:id, companyEmail:intern.companyEmail, role:intern.role, status:'Pending', appliedAt:new Date().toISOString() };
-  apps.push(app);
-  localStorage.setItem('studentApplications', JSON.stringify(apps));
-  alert('Application submitted. Wait for admin approval.');
+  const app={id:'app_'+Date.now(), studentEmail:current.email, internshipId:id, companyEmail:intern.companyEmail, role:intern.role, status:'Pending', appliedAt:new Date().toISOString()};
+  apps.push(app); localStorage.setItem('studentApplications', JSON.stringify(apps));
+  alert('Application submitted. Status: Pending');
+  btn.innerText='Applied'; btn.disabled=true;
+  showApplications();
 }
 
-// ===== Blockchain certificate =====
+// ===== Mark Applied Internships =====
+function markAppliedInternships(){
+  const apps=JSON.parse(localStorage.getItem('studentApplications')||'[]');
+  const matchedArea=document.getElementById('matchedArea');
+  if(!matchedArea) return;
+  matchedArea.querySelectorAll('.intern').forEach(div=>{
+    const btn=div.querySelector('button');
+    const id=btn.getAttribute('onclick').match(/"(.+?)"/)[1];
+    const applied=apps.some(a=>a.internshipId===id && a.studentEmail===current.email);
+    if(applied){ btn.innerText="Applied"; btn.disabled=true; }
+  });
+}
+
+// ===== Show Applications / Track Record =====
+function showApplications(){
+  const appArea=document.getElementById('applicationTrack');
+  appArea.innerHTML='';
+  const apps=JSON.parse(localStorage.getItem('studentApplications')||'[]');
+  const myApps=apps.filter(a=>a.studentEmail===current.email);
+  if(myApps.length===0){ appArea.innerHTML='<p>No applications yet.</p>'; return; }
+  myApps.forEach(a=>{
+    const div=document.createElement('div');
+    div.className='intern';
+    div.innerHTML=`<strong>${a.role}</strong> at ${a.companyEmail}<br>
+                   Status: <strong>${a.status}</strong><br>
+                   Applied on: ${new Date(a.appliedAt).toLocaleDateString()}`;
+    appArea.appendChild(div);
+  });
+}
+
+// ===== Show Certificates =====
 function showCertificates(){
   const certArea=document.getElementById('certificateArea');
   certArea.innerHTML='<p>No certificates yet. Will be added after approval of internship.</p>';
-  const apps = JSON.parse(localStorage.getItem('studentApplications')||'[]');
+  const apps=JSON.parse(localStorage.getItem('studentApplications')||'[]');
   apps.filter(a=>a.studentEmail===current.email && a.status==='Approved').forEach(a=>{
     const div=document.createElement('div');
     div.className='intern';
@@ -281,7 +340,32 @@ function showCertificates(){
 
 // ===== Navigation =====
 function goHome(){ location.href='index.html'; }
-function doLogout(){ localStorage.removeItem('currentUser'); alert('Logged out'); goHome(); }
+function doLogout(){
+  localStorage.removeItem('currentUser');
+  localStorage.removeItem(current.email+'_currentStep');
+  alert('Logged out');
+  goHome();
+}
+
+// ===== Resume Last Step =====
+window.onload=function(){
+  const savedStep=localStorage.getItem(current.email+'_currentStep')||'Profile';
+  ['stepProfile','stepAI','stepTest','stepResult'].forEach(id=>document.getElementById(id).style.display='none');
+
+  switch(savedStep){
+    case 'Profile': document.getElementById('stepProfile').style.display='block'; break;
+    case 'AI': document.getElementById('stepAI').style.display='block'; break;
+    case 'Test': startTest(); break;
+    case 'Result':
+      document.getElementById('stepResult').style.display='block';
+      const profiles = JSON.parse(localStorage.getItem('profiles')||'{}');
+      const student = profiles[current.email] || {skills:[]};
+      showResult(Q.length); // simulate full score or adjust
+      showCertificates();
+      showApplications();
+      break;
+  }
+};
 </script>
 
 </body>
