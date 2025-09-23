@@ -49,7 +49,7 @@ button{padding:10px 14px;border-radius:8px;border:none;background:var(--accent);
 // ===== Session check =====
 const cur = JSON.parse(localStorage.getItem('currentUser')||'null');
 if(!cur || cur.role!=='company'){ alert('Login as company first'); location.href='index.html'; }
-document.getElementById('c_company').value = cur.email;
+//document.getElementById('c_company').value = cur.email;
 
 // ===== Preload top internships =====
 (function preloadInternships(){
@@ -68,7 +68,7 @@ document.getElementById('c_company').value = cur.email;
 
 // ===== Internship Posting =====
 function addInternship(){
- // const companyEmail = cur.email;
+  const companyEmail = cur.email;
   const companyName = document.getElementById('c_company').value.trim();
   const role = document.getElementById('c_role').value.trim();
   const location = document.getElementById('c_location').value.trim();
